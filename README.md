@@ -43,7 +43,7 @@ Here is a simple example that waits for up to one second and writes out the job 
 
 Create a factory that produces worker instances. This is just a `Func<IWorker<TJob>>`. Here's a simple example:
 
-   Func<IWorker<Job>> workerFactory = () => new Worker();
+    Func<IWorker<Job>> workerFactory = () => new Worker();
 
 ###Step 4###
 
