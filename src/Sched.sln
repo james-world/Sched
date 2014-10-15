@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30723.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sched", "Sched\Sched.csproj", "{38E0DE66-77CD-44E0-BCB0-0A5CCB102217}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sched.Tests", "Sched.Tests\Sched.Tests.csproj", "{1B38499B-FEFF-450E-A8C2-DC8E03088D89}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{38E0DE66-77CD-44E0-BCB0-0A5CCB102217}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38E0DE66-77CD-44E0-BCB0-0A5CCB102217}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38E0DE66-77CD-44E0-BCB0-0A5CCB102217}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38E0DE66-77CD-44E0-BCB0-0A5CCB102217}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1B38499B-FEFF-450E-A8C2-DC8E03088D89}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B38499B-FEFF-450E-A8C2-DC8E03088D89}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B38499B-FEFF-450E-A8C2-DC8E03088D89}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B38499B-FEFF-450E-A8C2-DC8E03088D89}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
