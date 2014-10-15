@@ -63,7 +63,7 @@ Schedule jobs:
 ###Step 6###
 Stop the scheduler. There are two overloads, `void Stop()` and `bool Stop(TimeSpan waitDuration`). The first blocks until pending jobs are complete. The second will limit how long the scheduler waits for pending jobs to complete, and returns a flag indicating whether they did.
 
-   jobScheduler.Stop();
+    jobScheduler.Stop();
 
 There is a complete example project in the source code.
  
