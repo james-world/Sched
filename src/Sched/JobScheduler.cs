@@ -76,7 +76,7 @@ namespace Sched
         /// </summary>
         public void Stop()
         {
-            Stop(TimeSpan.MaxValue);
+            Stop(TimeSpan.Zero);
         }
 
         /// <summary>
