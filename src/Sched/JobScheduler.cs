@@ -16,7 +16,8 @@ namespace Sched
         private readonly Func<IWorker<TJob>> _workerFactory;
         private bool _started;
         private Task[] _workerTasks;
-        private BlockingCollection<TJob> _jobs;
+        private readonly BlockingCollection<TJob> _jobs;
+        private object _gate = new object();
         private CancellationTokenSource _cts;
 
         /// <summary>
@@ -33,22 +34,26 @@ namespace Sched
 
         /// <summary>
         /// Starts scheduling jobs
-        /// This method is not threadsafe.
+        /// This method is threadsafe.
         /// </summary>
         public void Start()
         {
-            if(_started)
-                throw new InvalidOperationException("Calling Start more than once is not allowed");
-
-            _started = true;
-            _workerTasks = new Task[_numWorkers];            
-            _cts = new CancellationTokenSource();
-
-            for (int i = 0; i < _numWorkers; i++)
+            lock (_gate)
             {
-                var worker = _workerFactory();
-                _workerTasks[i] = Task.Factory.StartNew(
-                    () => RunWorker(worker), _cts.Token);
+                if (_started)
+                    throw new InvalidOperationException("Calling Start more than once is not allowed");
+
+                _started = true;
+                _workerTasks = new Task[_numWorkers];
+                _cts = new CancellationTokenSource();
+
+                for (int i = 0; i < _numWorkers; i++)
+                {
+                    var worker = _workerFactory();
+                    _workerTasks[i] = Task.Factory.StartNew(
+                        () => RunWorker(worker),
+                        TaskCreationOptions.LongRunning);
+                }
             }
         }
 
@@ -72,7 +77,7 @@ namespace Sched
         /// <summary>
         /// Stops a running JobScheduler.
         /// Attemps to cancel running workers and waits for all workers to complete current jobs.
-        /// This method is not threadsafe.
+        /// This method is threadsafe.
         /// </summary>
         public void Stop()
         {
@@ -88,14 +93,17 @@ namespace Sched
         /// <returns>True if all workers completed within the waitDuration, otherwise false.</returns>
         public bool Stop(TimeSpan waitDuration)
         {
-            if (!_started)
-                throw new InvalidOperationException("Calling Stop before Start is not allowed");
+            lock (_gate)
+            {
+                if (!_started)
+                    throw new InvalidOperationException("Calling Stop before Start is not allowed");
 
-            _cts.Cancel();
+                _cts.Cancel();
 
-            var allCompleted = Task.WaitAll(_workerTasks, waitDuration);
+                var allCompleted = Task.WaitAll(_workerTasks, waitDuration);
 
-            return allCompleted;
+                return allCompleted;
+            }
         }
 
         /// <summary>

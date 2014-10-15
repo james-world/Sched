@@ -4,7 +4,7 @@ Sched is a very simple library to create a job manager to allocate jobs to a fix
 
 ##Basic Usage##
 
-####Step 1###
+###Step 1###
 Create a type to represent a job. This can be any type. Here's a simple example that just holds a job number:
 
     public class Job
@@ -22,7 +22,7 @@ Create a type to represent a job. This can be any type. Here's a simple example 
         }
     }
 
-####Step 2###
+###Step 2###
 
 Create a worker that will process jobs which implements `IWorker<TJob>` and it's single method:
 
@@ -39,7 +39,7 @@ Here is a simple example that waits for up to one second and writes out the job 
         }
     }
 
-####Step 3###
+###Step 3###
 
 Create a factory that produces worker instances. This is just a `Func<IWorker<TJob>>`. Here's a simple example:
 

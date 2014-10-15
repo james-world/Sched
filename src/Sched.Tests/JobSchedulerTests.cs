@@ -10,14 +10,14 @@ namespace Sched.Tests
 {
     public class JobSchedulerTests
     {
-        readonly List<TestWorker> _workers = new List<TestWorker>();
+        private readonly List<TestWorker> _workers = new List<TestWorker>();
 
         private Func<IWorker<TestJob>> _workerFactory;
 
         [SetUp]
         public void SetUp()
         {
-            _workerFactory= () =>
+            _workerFactory = () =>
             {
                 var worker = new TestWorker();
                 _workers.Add(worker);
@@ -76,6 +76,63 @@ namespace Sched.Tests
             Thread.Sleep(TimeSpan.FromMilliseconds(100));
 
             Assert.False(job3.Assigned);
+            Assert.AreEqual(2, _workers.Count);
+        }
+
+        [Test]
+        public void StopCancelsPendingJobs()
+        {
+            _workerFactory = () =>
+            {
+                var worker = new TestWorker(doNotCancel: true);
+                _workers.Add(worker);
+                return worker;
+            };
+            var sut = new JobScheduler<TestJob>(_workerFactory, 2);
+
+            var job1 = new TestJob();
+            var job2 = new TestJob();
+            var job3 = new TestJob();
+
+            sut.ScheduleJob(job1);
+            sut.ScheduleJob(job2);
+            sut.ScheduleJob(job3);
+
+            sut.Start();
+
+            SpinWait.SpinUntil(() => job1.Assigned, TimeSpan.FromSeconds(5));
+            SpinWait.SpinUntil(() => job2.Assigned, TimeSpan.FromSeconds(5));
+
+            var completed = sut.Stop(TimeSpan.FromSeconds(1));
+
+            Assert.False(completed);
+        }
+
+        [Test]
+        public void StopDoesntWaitForPendingJobs()
+        {
+            var sut = new JobScheduler<TestJob>(_workerFactory, 2);
+
+            var job1 = new TestJob();
+            var job2 = new TestJob();
+            var job3 = new TestJob();
+
+            sut.ScheduleJob(job1);
+            sut.ScheduleJob(job2);
+            sut.ScheduleJob(job3);
+
+            sut.Start();
+
+            SpinWait.SpinUntil(() => job1.Assigned, TimeSpan.FromSeconds(5));
+            SpinWait.SpinUntil(() => job2.Assigned, TimeSpan.FromSeconds(5));
+
+            sut.Stop();
+
+            Assert.IsEmpty(_workers[0].CompletedJobs());
+            Assert.IsEmpty(_workers[1].CompletedJobs());
+            Assert.False(job1.Completed);
+            Assert.False(job2.Completed);
+            Assert.False(job3.Assigned);
         }
     }
 
@@ -83,6 +140,12 @@ namespace Sched.Tests
     {
         private readonly ConcurrentBag<TestJob> _completedJobs = new ConcurrentBag<TestJob>();
         private volatile TestJob _currentJob = null;
+        private readonly bool _doNotCancel;
+
+        public TestWorker(bool doNotCancel = false)
+        {
+            _doNotCancel = doNotCancel;
+        }
 
         public void ExecuteJob(TestJob job, System.Threading.CancellationToken ct)
         {
@@ -90,7 +153,17 @@ namespace Sched.Tests
             job.Assigned = true;
             try
             {
-                job.WaitForJobCompletion().Wait(ct);
+                var jobTask = job.WaitForJobCompletion();
+
+                if (_doNotCancel)
+                {
+                    jobTask.Wait(TimeSpan.FromSeconds(10));
+                }
+                else
+                {
+                    jobTask.Wait(ct);
+                }
+
                 job.Completed = true;
             }
             catch (OperationCanceledException)
