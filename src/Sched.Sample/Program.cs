@@ -1,19 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Sched.Sample
 {
     class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
-            Func<IWorker<Job>> jobFactory = () => new Worker();
+            Func<IWorker<Job>> workerFactory = () => new Worker();
 
-            var jobScheduler = new JobScheduler<Job>(jobFactory, 2);
+            var jobScheduler = new JobScheduler<Job>(workerFactory, 2);
 
             for (int i = 1; i <= 10; i++)
             {
