@@ -87,7 +87,7 @@ namespace Sched
         /// <summary>
         /// Stops a running JobScheduler.
         /// Attempts to cancel running works and waits for all workers to complete current jobs.
-        /// This method is not threadsafe.
+        /// This method is threadsafe.
         /// </summary>
         /// <param name="waitDuration">Maximum time to wait for worker</param>
         /// <returns>True if all workers completed within the waitDuration, otherwise false.</returns>
