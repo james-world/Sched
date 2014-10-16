@@ -2,6 +2,10 @@
 
 Sched is a very simple library to create a job manager to allocate jobs to a fixed pool of workers.
 
+###Installation###
+
+This is available from nuget. The package is `sched`.
+
 ##Basic Usage##
 
 ###Step 1###
