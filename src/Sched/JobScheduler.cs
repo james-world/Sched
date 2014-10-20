@@ -10,7 +10,7 @@ namespace Sched
     /// the supplied IWorkerFactory and schedules jobs.
     /// </summary>
     /// <typeparam name="TJob">The type used to represent a job</typeparam>
-    public class JobScheduler<TJob>
+    public class JobScheduler<TJob> : IJobScheduler<TJob>
     {
         private readonly int _numWorkers;
         private readonly Func<IWorker<TJob>> _workerFactory;
